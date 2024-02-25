@@ -138,7 +138,7 @@ export const flattenChangeset = (
           path = `${path}[${obj.key}]`;
         } else if (embeddedKey === '$value') {
           path = `${path}[?(@='${obj.key}')]`;
-          const valueType = getTypeOfObj(obj.value);
+          const valueType = getTypeOfObj(obj.value !== null ? obj.value : obj.oldValue);
           return [
             {
               ...obj,
@@ -157,7 +157,7 @@ export const flattenChangeset = (
 
       return flattenChangeset(obj.changes || obj, path, obj.embeddedKey);
     } else {
-      const valueType = getTypeOfObj(obj.value);
+      const valueType = getTypeOfObj(obj.value !== null ? obj.value : obj.oldValue);
       return [
         {
           ...obj,
@@ -316,14 +316,14 @@ const compare = (oldObj: any, newObj: any, path: any, embeddedObjKeys: any, keyP
   let changes: any[] = [];
 
   const typeOfOldObj = getTypeOfObj(oldObj);
-  const typeOfNewObj = getTypeOfObj(newObj);
-
-  // if type of object changes, consider it as old obj has been deleted and a new object has been added
-  if (typeOfOldObj !== typeOfNewObj) {
-    changes.push({ type: Operation.REMOVE, key: getKey(path), value: oldObj });
-    changes.push({ type: Operation.ADD, key: getKey(path), value: newObj });
-    return changes;
-  }
+  // const typeOfNewObj = getTypeOfObj(newObj);
+  //
+  // // if type of object changes, consider it as old obj has been deleted and a new object has been added
+  // if (typeOfOldObj !== typeOfNewObj) {
+  //   changes.push({ type: Operation.REMOVE, key: getKey(path), value: oldObj });
+  //   changes.push({ type: Operation.ADD, key: getKey(path), value: newObj });
+  //   return changes;
+  // }
 
   switch (typeOfOldObj) {
     case 'Date':
